@@ -2,40 +2,68 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EntryPoint : MonoBehaviour
+namespace Inventory
 {
-    public InventoryGridView _view;
-
-    private void Start()
+    public class EntryPoint : MonoBehaviour
     {
-        //tmp
-        var inventoryData = new InventoryGridData
-        {
-            Size = new Vector2Int(3, 4),
-            OwnerId = "Bashka",
-            Slots = new List<InventorySlotData>()
-        };
+        public InventoryGridView _view;
+        private InventoryService _inventoryService;
 
-        var size = inventoryData.Size;
-        for (var i = 0; i < size.x; i++)
+        private void Start()
         {
-            for (var j = 0; j < size.y; j++)
-            {
-                var index = i * size.y + j;
-                inventoryData.Slots.Add(new InventorySlotData());
-            }
+            //tmp
+
+            _inventoryService = new InventoryService();
+
+            var ownerId = "Bashka";
+            var inventoryData = CreateTestInventory(ownerId);
+            var inventory = _inventoryService.RegisterInventory(inventoryData);
+            
+            _view.Setup(inventory);
+
+            var addedResult = _inventoryService.AddItemsToInventory(ownerId, new Vector2Int(1, 1),  "apple", 30);
+            Debug.Log($"Items added. ItemId: apple, amount to add 30, amount added: {addedResult.ItemsAddedAmount}");
+
+            addedResult = _inventoryService.AddItemsToInventory(ownerId, "кирпич", 112);
+            Debug.Log($"Items added. ItemId: кирпич, amount to add 112, amount added: {addedResult.ItemsAddedAmount}");
+
+            addedResult = _inventoryService.AddItemsToInventory(ownerId, "letter", 10);
+            Debug.Log($"Items added. ItemId: letter, amount to add 10, amount added: {addedResult.ItemsAddedAmount}");
+
+            _view.Print();
+
+            var removedResult = _inventoryService.RemoveItems(ownerId, "apple", 13);
+            Debug.Log($"Items removed. ItemId: apple, amount to remove: 13, Success: {removedResult.Success}");
+
+            _view.Print();
+
+            removedResult = _inventoryService.RemoveItems(ownerId, "apple", 18);
+            Debug.Log($"Items removed. ItemId: apple, amount to remove: 18, Success: {removedResult.Success}");
+
+            _view.Print();
+
+            //tmp
         }
 
-        //Fill slots
+        private InventoryGridData CreateTestInventory(string ownerId)
+        {
+            var size = new Vector2Int(3, 4);
+            var createdInventorySlots = new List<InventorySlotData>();
+            var length = size.x * size.y;
+            for (var i = 0; i < length; i++)
+            {
+                createdInventorySlots.Add(new InventorySlotData());
+            }
 
-        var slotData = inventoryData.Slots[0];
-        slotData.ItemId = "Банан";
-        slotData.Amount = 3;
-        //tmp
+            var createdInventoryData = new InventoryGridData
+            {
+                OwnerId = ownerId,
+                Size = size,
+                Slots = createdInventorySlots
+            };
 
-        var inventory = new InventoryGrid(inventoryData);
-
-        _view.Setup(inventory);
+            return createdInventoryData;
+        }
 
     }
 }
