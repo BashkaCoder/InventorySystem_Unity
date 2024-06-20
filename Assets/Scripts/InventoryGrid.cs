@@ -104,9 +104,9 @@ namespace Inventory
 
             var amountToRemove = amount;
 
-            for (var i = 0; i < Size.x; i++)
+            for (var i = Size.x - 1; i >= 0; i--)
             {
-                for (var j = 0; j < Size.y; j++)
+                for (var j = Size.y - 1; j >= 0; j--)
                 {
                     var slotCoords = new Vector2Int(i, j);
                     var slot = _slotsMap[slotCoords];

@@ -24,9 +24,6 @@ namespace Inventory
             var addedResult = _inventoryService.AddItemsToInventory(ownerId, new Vector2Int(1, 3), "apple", 30);
             Debug.Log($"Items added. ItemId: apple, amount to add 30, amount added: {addedResult.ItemsAddedAmount}");
 
-            var removedResult = _inventoryService.RemoveItems(ownerId, "apple", 30);
-            Debug.Log($"Items removed. ItemId: apple, amount to remove: 30, Success: {removedResult.Success}");
-
             addedResult = _inventoryService.AddItemsToInventory(ownerId, "кирпич", 110);
             Debug.Log($"Items added. ItemId: кирпич, amount to add 110, amount added: {addedResult.ItemsAddedAmount}");
 
@@ -35,13 +32,16 @@ namespace Inventory
 
             _view.Print();
 
-            removedResult = _inventoryService.RemoveItems(ownerId, "apple", 13);
+            var removedResult = _inventoryService.RemoveItems(ownerId, "apple", 13);
             Debug.Log($"Items removed. ItemId: apple, amount to remove: 13, Success: {removedResult.Success}");
 
             _view.Print();
 
             removedResult = _inventoryService.RemoveItems(ownerId, "apple", 18);
             Debug.Log($"Items removed. ItemId: apple, amount to remove: 18, Success: {removedResult.Success}");
+
+            removedResult = _inventoryService.RemoveItems(ownerId, "кирпич", 15);
+            Debug.Log($"Items removed. ItemId: apple, amount to remove: 15, Success: {removedResult.Success}");
 
             _view.Print();
 
