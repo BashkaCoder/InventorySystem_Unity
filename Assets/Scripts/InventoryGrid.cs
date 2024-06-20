@@ -76,7 +76,7 @@ namespace Inventory
 
             if (newValue > itemSlotCapacity)
             {
-                var remainingItems = newValue - slot.Amount;
+                var remainingItems = newValue - itemSlotCapacity;
                 var itemsToAddAmount = itemSlotCapacity - slot.Amount;
                 itemsAddedAmount += itemsToAddAmount;
                 slot.Amount = itemSlotCapacity;
@@ -108,8 +108,8 @@ namespace Inventory
             {
                 for (var j = 0; j < Size.y; j++)
                 {
-                    var coords = new Vector2Int(i, j);
-                    var slot = _slotsMap[coords];
+                    var slotCoords = new Vector2Int(i, j);
+                    var slot = _slotsMap[slotCoords];
 
                     if (slot.ItemId != itemId)
                     {
@@ -120,11 +120,11 @@ namespace Inventory
                     {
                         amountToRemove -= slot.Amount;
 
-                        RemoveItems(coords, itemId, slot.Amount);
+                        RemoveItems(slotCoords, itemId, slot.Amount);
                     }
                     else
                     {
-                        RemoveItems(coords, itemId, slot.Amount);
+                        RemoveItems(slotCoords, itemId, amountToRemove);
 
                         return new RemoveItemsFromInventoryGridResult(OwnerId, amount, true);
                     }
@@ -270,7 +270,7 @@ namespace Inventory
                     var coords = new Vector2Int(i, j);
                     var slot = _slotsMap[coords];
 
-                    if (slot.IsEmpty)
+                    if (!slot.IsEmpty)
                     {
                         continue;
                     }
@@ -279,7 +279,7 @@ namespace Inventory
                     var newValue = remainingAmount;
                     var slotItemCapacity = GetItemSlotCapacity(itemId);
 
-                    if(newValue > slotItemCapacity)
+                    if (newValue > slotItemCapacity)
                     {
                         remainingAmount = newValue - slotItemCapacity;
                         var itemsToAddAmount = slotItemCapacity;
@@ -289,7 +289,7 @@ namespace Inventory
                     else
                     {
                         itemsAddedAmount += remainingAmount;
-                        slot.Amount = remainingAmount;
+                        slot.Amount = newValue;
                         remainingAmount = 0;
 
                         return itemsAddedAmount;
@@ -302,7 +302,7 @@ namespace Inventory
 
         private int GetItemSlotCapacity(string itemId)
         {
-            return 69;
+            return 100;
         }
     }
 }

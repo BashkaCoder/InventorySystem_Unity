@@ -11,8 +11,8 @@
         public AddItemsToInventoryGridResult(string inventoryOwnerId, int itemsToAddAmount, int itemsAddedAmount) 
         {
             InventoryOwnerId = inventoryOwnerId;
-            ItemsToAddAmount = itemsAddedAmount;
-            ItemsAddedAmount = itemsAddedAmount ;
+            ItemsToAddAmount = itemsToAddAmount;
+            ItemsAddedAmount = itemsAddedAmount;
         }
     }
 }
