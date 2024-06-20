@@ -21,7 +21,7 @@ namespace Inventory
             
             _view.Setup(inventory);
 
-            var addedResult = _inventoryService.AddItemsToInventory(ownerId,  "apple", 30);
+            var addedResult = _inventoryService.AddItemsToInventory(ownerId, new Vector2Int(1, 1),  "apple", 30);
             Debug.Log($"Items added. ItemId: apple, amount to add 30, amount added: {addedResult.ItemsAddedAmount}");
 
             addedResult = _inventoryService.AddItemsToInventory(ownerId, "кирпич", 112);
@@ -37,7 +37,7 @@ namespace Inventory
 
             _view.Print();
 
-            removedResult = _inventoryService.RemoveItems(ownerId, "apple", 31);
+            removedResult = _inventoryService.RemoveItems(ownerId, "apple", 18);
             Debug.Log($"Items removed. ItemId: apple, amount to remove: 18, Success: {removedResult.Success}");
 
             _view.Print();

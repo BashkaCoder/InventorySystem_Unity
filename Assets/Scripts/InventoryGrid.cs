@@ -36,11 +36,6 @@ namespace Inventory
                 for (var j = 0; j < size.y; j++)
                 {
                     var index = i * size.y + j;
-                    if (index >= data.Slots.Count)
-                    {
-                        break;
-                    }
-
                     var slotData = data.Slots[index];
                     var slot = new InventorySlot(slotData);
                     var position = new Vector2Int(i, j);
@@ -109,9 +104,6 @@ namespace Inventory
 
             var amountToRemove = amount;
 
-            var itemsRemovedAmount = 0;
-            var success = false;
-
             for (var i = 0; i < Size.x; i++)
             {
                 for (var j = 0; j < Size.y; j++)
@@ -119,28 +111,25 @@ namespace Inventory
                     var coords = new Vector2Int(i, j);
                     var slot = _slotsMap[coords];
 
-                    if (slot.ItemId == itemId)
+                    if (slot.ItemId != itemId)
                     {
-                        if (slot.Amount >= amount)
-                        {
-                            itemsRemovedAmount += amount;
-                            slot.Amount -= amount;
-                            success = true;
-                            break;
-                        }
-                        else
-                        {
-                            itemsRemovedAmount += slot.Amount;
-                            amount -= slot.Amount;
-                            slot.Amount = 0;
-                            slot.ItemId = null;
-                        }
+                        continue;
+                    }
+
+                    if(amountToRemove > slot.Amount)
+                    {
+                        amountToRemove -= slot.Amount;
+
+                        RemoveItems(coords, itemId, slot.Amount);
+                    }
+                    else
+                    {
+                        RemoveItems(coords, itemId, slot.Amount);
+
+                        return new RemoveItemsFromInventoryGridResult(OwnerId, amount, true);
                     }
                 }
-                if (success) break;
             }
-
-            return new RemoveItemsFromInventoryGridResult(OwnerId, itemsRemovedAmount, success);
 
             throw new Exception("Something went wrong, couldn't remove some items");
         }
@@ -225,13 +214,18 @@ namespace Inventory
                     var coords = new Vector2Int(i, j);
                     var slot = _slotsMap[coords];
 
-                    if (slot.IsEmpty || slot.ItemId != itemId)
+                    if (slot.IsEmpty)
                     {
                         continue;
                     }
 
                     var slotItemCapacity = GetItemSlotCapacity(itemId);
                     if (slot.Amount >= slotItemCapacity)
+                    {
+                        continue;
+                    }
+
+                    if (slot.ItemId != itemId)
                     {
                         continue;
                     }
@@ -258,6 +252,7 @@ namespace Inventory
 
                         return itemsAddedAmount;
                     }
+
                 }
             }
             return itemsAddedAmount;
@@ -275,7 +270,7 @@ namespace Inventory
                     var coords = new Vector2Int(i, j);
                     var slot = _slotsMap[coords];
 
-                    if (!slot.IsEmpty && slot.ItemId != itemId)
+                    if (slot.IsEmpty)
                     {
                         continue;
                     }
@@ -284,7 +279,7 @@ namespace Inventory
                     var newValue = remainingAmount;
                     var slotItemCapacity = GetItemSlotCapacity(itemId);
 
-                    if (newValue > slotItemCapacity)
+                    if(newValue > slotItemCapacity)
                     {
                         remainingAmount = newValue - slotItemCapacity;
                         var itemsToAddAmount = slotItemCapacity;
