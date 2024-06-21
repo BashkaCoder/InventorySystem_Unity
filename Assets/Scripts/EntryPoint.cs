@@ -1,51 +1,68 @@
-﻿using Inventory;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Inventory
 {
     public class EntryPoint : MonoBehaviour
     {
-        public InventoryGridView _view;
+        [SerializeField] private ScreenView _screenView;
+
+        private const string Owner_1 = "Bashka";
+        private const string Owner_2 = "NEBashka";
+        private readonly string[] _itemIds = { "Яблоко", "Банан", "Киви" };
+
         private InventoryService _inventoryService;
+        private ScreenController _screenController;
+        private string _cachedOwnerId;
 
         private void Start()
         {
-            //tmp
-
             _inventoryService = new InventoryService();
 
-            var ownerId = "Bashka";
-            var inventoryData = CreateTestInventory(ownerId);
-            var inventory = _inventoryService.RegisterInventory(inventoryData);
-            
-            _view.Setup(inventory);
+            var inventoryDataBashka = CreateTestInventory(Owner_1);
+            _inventoryService.RegisterInventory(inventoryDataBashka);
 
-            var addedResult = _inventoryService.AddItemsToInventory(ownerId, new Vector2Int(1, 3), "apple", 30);
-            Debug.Log($"Items added. ItemId: apple, amount to add 30, amount added: {addedResult.ItemsAddedAmount}");
+            var inventoryDataNEBashka = CreateTestInventory(Owner_2);
+            _inventoryService.RegisterInventory(inventoryDataNEBashka);
 
-            addedResult = _inventoryService.AddItemsToInventory(ownerId, "кирпич", 110);
-            Debug.Log($"Items added. ItemId: кирпич, amount to add 110, amount added: {addedResult.ItemsAddedAmount}");
+            _screenController = new ScreenController(_inventoryService, _screenView);
+            _screenController.OpenInventory(Owner_1);
+            _cachedOwnerId = Owner_1;
+        }
 
-            addedResult = _inventoryService.AddItemsToInventory(ownerId, "letter", 10);
-            Debug.Log($"Items added. ItemId: letter, amount to add 10, amount added: {addedResult.ItemsAddedAmount}");
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1)) 
+            {
+                _screenController.OpenInventory(Owner_1);
+                _cachedOwnerId = Owner_1;
+            }
 
-            _view.Print();
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                _screenController.OpenInventory(Owner_2);
+                _cachedOwnerId = Owner_2;
+            }
 
-            var removedResult = _inventoryService.RemoveItems(ownerId, "apple", 13);
-            Debug.Log($"Items removed. ItemId: apple, amount to remove: 13, Success: {removedResult.Success}");
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                var rIndex = Random.Range(0, _itemIds.Length);
+                var rItemId = _itemIds[rIndex];
+                var rAmount = Random.Range(1, 50);
+                var result = _inventoryService.AddItemsToInventory(_cachedOwnerId, rItemId, rAmount);
 
-            _view.Print();
+                Debug.Log($"Item add: ${rItemId}. Amount: #{rAmount}");
+            }
 
-            removedResult = _inventoryService.RemoveItems(ownerId, "apple", 18);
-            Debug.Log($"Items removed. ItemId: apple, amount to remove: 18, Success: {removedResult.Success}");
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                var rIndex = Random.Range(0, _itemIds.Length);
+                var rItemId = _itemIds[rIndex];
+                var rAmount = Random.Range(1, 50);
+                var result = _inventoryService.RemoveItems(_cachedOwnerId, rItemId, rAmount);
 
-            removedResult = _inventoryService.RemoveItems(ownerId, "кирпич", 15);
-            Debug.Log($"Items removed. ItemId: apple, amount to remove: 15, Success: {removedResult.Success}");
-
-            _view.Print();
-
-            //tmp
+                Debug.Log($"Item remove: ${rItemId}. Trying to remove: #{result.ItemsToRemoveAmount}. Success: {result.Success}");
+            }
         }
 
         private InventoryGridData CreateTestInventory(string ownerId)
@@ -67,6 +84,5 @@ namespace Inventory
 
             return createdInventoryData;
         }
-
     }
 }
