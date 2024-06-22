@@ -17,7 +17,8 @@ namespace Inventory
 
         private void Start()
         {
-            var gameStateProvider = new GameStatePlayerPrefsProvider();
+            //var gameStateProvider = new GameStatePlayerPrefsProvider();
+            var gameStateProvider = new GameStateBinaryFormatterProvider();
 
             gameStateProvider.LoadGameState();
 
