@@ -5,7 +5,13 @@ namespace Inventory
 {
     public class InventoryService
     {
+        private readonly IGameStateSaver _gameStateSaver;
         private readonly Dictionary<string, InventoryGrid> _inventoriesMap = new();
+
+        public InventoryService(IGameStateSaver gameStateSaver)
+        {
+            _gameStateSaver = gameStateSaver;
+        }
 
         public InventoryGrid RegisterInventory(InventoryGridData inventoryData)
         {
@@ -18,25 +24,41 @@ namespace Inventory
         public AddItemsToInventoryGridResult AddItemsToInventory(string ownerId, string itemId, int amount = 1)
         {
             var inventory = _inventoriesMap[ownerId];
-            return inventory.AddItems(itemId, amount);
+            var result = inventory.AddItems(itemId, amount);
+
+            _gameStateSaver.SaveGameState();
+
+            return result;
         }
 
         public AddItemsToInventoryGridResult AddItemsToInventory(string ownerId, Vector2Int slotCoords, string itemId, int amount = 1)
         {
             var inventory = _inventoriesMap[ownerId];
-            return inventory.AddItems(slotCoords,  itemId, amount);
+            var result = inventory.AddItems(slotCoords, itemId, amount);
+
+            _gameStateSaver.SaveGameState();
+
+            return result;
         }
 
         public RemoveItemsFromInventoryGridResult RemoveItems(string ownerId, string itemId, int amount = 1)
         {
             var inventory = _inventoriesMap[ownerId];
-            return inventory.RemoveItems(itemId, amount);
+            var result = inventory.RemoveItems(itemId, amount);
+
+            _gameStateSaver.SaveGameState();
+
+            return result;
         }
 
         public RemoveItemsFromInventoryGridResult RemoveItems(string ownerId, Vector2Int slotCoords, string itemId, int amount = 1)
         {
             var inventory = _inventoriesMap[ownerId];
-            return inventory.RemoveItems(slotCoords, itemId, amount);
+            var result = inventory.RemoveItems(slotCoords, itemId, amount);
+
+            _gameStateSaver.SaveGameState();
+
+            return result;
         }
 
         public bool Has(string ownerId, string itemId, int amount = 1)

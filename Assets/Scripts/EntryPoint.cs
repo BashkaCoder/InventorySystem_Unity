@@ -17,13 +17,18 @@ namespace Inventory
 
         private void Start()
         {
-            _inventoryService = new InventoryService();
+            var gameStateProvider = new GameStatePlayerPrefsProvider();
 
-            var inventoryDataBashka = CreateTestInventory(Owner_1);
-            _inventoryService.RegisterInventory(inventoryDataBashka);
+            gameStateProvider.LoadGameState();
 
-            var inventoryDataNEBashka = CreateTestInventory(Owner_2);
-            _inventoryService.RegisterInventory(inventoryDataNEBashka);
+            _inventoryService = new InventoryService(gameStateProvider);
+
+            var gameState = gameStateProvider.GameState;
+
+            foreach (var inventoryData in gameState.Inventories)
+            {
+                _inventoryService.RegisterInventory(inventoryData);
+            }
 
             _screenController = new ScreenController(_inventoryService, _screenView);
             _screenController.OpenInventory(Owner_1);
@@ -63,26 +68,6 @@ namespace Inventory
 
                 Debug.Log($"Item remove: ${rItemId}. Trying to remove: #{result.ItemsToRemoveAmount}. Success: {result.Success}");
             }
-        }
-
-        private InventoryGridData CreateTestInventory(string ownerId)
-        {
-            var size = new Vector2Int(3, 4);
-            var createdInventorySlots = new List<InventorySlotData>();
-            var length = size.x * size.y;
-            for (var i = 0; i < length; i++)
-            {
-                createdInventorySlots.Add(new InventorySlotData());
-            }
-
-            var createdInventoryData = new InventoryGridData
-            {
-                OwnerId = ownerId,
-                Size = size,
-                Slots = createdInventorySlots
-            };
-
-            return createdInventoryData;
         }
     }
 }
